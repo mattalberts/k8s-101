@@ -94,7 +94,7 @@ metadata:
     kubernetes.io/ingress.class: contour
 spec:
   rules:
-  - host: nginx-${USER}.ing.pdx-a.k8s.cfplat.com
+  - host: ${USER}.ing.pdx-a.k8s.cfplat.com
     http:
       paths:
       - path: /
