@@ -1,0 +1,104 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: nginx-sites
+  labels:
+    app: nginx
+    role: site
+data:
+  index.html: |
+    OK
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+    role: site
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+    role: site
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+      role: site
+  template:
+    metadata:
+      labels:
+        app: nginx
+        role: site
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.15.7
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+        resources:
+          limits:
+            cpu: 100m
+            memory: 32Mi
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: shared-data
+        configMap:
+          name: nginx-sites
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress
+  labels:
+    app: nginx
+    role: access
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              app.pyli.cfplat.com/name: ingress-system
+      ports:
+        - protocol: TCP
+          port: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+    role: ingress
+  annotations:
+    kubernetes.io/ingress.class: contour
+spec:
+  rules:
+  - host: nginx-${USER}.ing.pdx-a.k8s.cfplat.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nginx
+          servicePort: 80
+---
