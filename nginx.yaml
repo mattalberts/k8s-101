@@ -12,7 +12,7 @@ data:
     <html>
       <head>
           <meta charset="UTF-8">
-          <title>helm-charts</title>
+          <title>${USER}</title>
           <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=desert"></script>
       </head>
       <body>
