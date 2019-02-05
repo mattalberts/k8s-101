@@ -13,6 +13,7 @@ data:
       <head>
           <meta charset="UTF-8">
           <title>${USER}</title>
+          <link rel="icon" href="http://raw.githubusercontent.com/mattalberts/k8s-101/master/images/osx-terminal.png" type="image/png" sizes="16x16">
           <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=desert"></script>
       </head>
       <body>
